@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Spin Wheel</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        height: 100vh;
+        background: linear-gradient(135deg, #4fc3f7, #1976d2);
+      }
+
+      .wrapper {
+        width: 90%;
+        max-width: 34.37em;
+        max-height: 90vh;
+        background-color: #fff;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        padding: 3em;
+        border-radius: 1em;
+        box-shadow: 0 4em 5em rgba(27, 8, 53, 0.2);
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      #wheel {
+        max-height: inherit;
+        width: inherit;
+        top: 0;
+        padding: 0;
+      }
+
+      #spin-btn {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        height: 26%;
+        width: 26%;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        background: radial-gradient(#4caf50 50%, #1b5e20 85%);
+        color: #33691e;
+        text-transform: uppercase;
+        font-size: 1.8em;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+      }
+
+      img {
+        position: absolute;
+        width: 4em;
+        top: 45%;
+        right: -8%;
+      }
+
+      #final-value {
+        font-size: 1.5em;
+        text-align: center;
+        margin-top: 1.5em;
+        color: #202020;
+        font-weight: 500;
+      }
+
+      @keyframes rotate {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .wrapper {
+          font-size: 12px;
+        }
+
+        img {
+          right: -5%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <canvas id="wheel"></canvas>
+        <button id="spin-btn">Spin</button>
+        <img
+          src="https://raw.githubusercontent.com/AsmrProg-YT/100-days-of-javascript/a8dcd9362ce6aa6cc76d000fe40766b576cea99f/Day%20%2321%20-%20Spin%20Wheel%20App/spinner-arrow.svg"
+          alt=""
+        />
+      </div>
+      <div id="final-value">
+        <p>Click on spin button to start</p>
+      </div>
+    </div>
+
+    <!-- Chart JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Chart JS Plugin for displaying text over chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+    <script>
+      const wheel = document.getElementById("wheel"),
+        spinBtn = document.getElementById("spin-btn"),
+        finalValue = document.getElementById("final-value");
+
+      // Values of min and max angle for a value
+
+      const rotationValues = [
+        { minDegree: 0, maxDegree: 30, value: "Dana Rp.300" },
+        { minDegree: 31, maxDegree: 90, value: "Dana Rp.500" },
+        { minDegree: 91, maxDegree: 150, value: "Dana Rp.1000" },
+        { minDegree: 151, maxDegree: 210, value: "Dana Rp.5000" },
+        { minDegree: 211, maxDegree: 270, value: "Pulsa Rp.5000" },
+        { minDegree: 271, maxDegree: 330, value: "Dana Rp.100" },
+        { minDegree: 331, maxDegree: 360, value: "Dana Rp.300" },
+      ];
+
+      // Size of pieces
+      const data = [16, 16, 16, 16, 16, 16];
+
+      //Background color of pieces
+
+      var pieColors = [
+        "#1565c0",
+        "#2196f3",
+        "#1565c0",
+        "#2196f3",
+        "#1565c0",
+        "#2196f3",
+      ];
+
+      // We use pie chart for wheel, so let's create it
+      let myChart = new Chart(wheel, {
+        // Display text on pie chart
+        plugins: [ChartDataLabels],
+        type: "pie",
+        data: {
+          // Values on chart
+          labels: [
+            "Dana Rp.500",
+            "Dana Rp.300",
+            "Dana Rp.100",
+            "Pulsa Rp.5000",
+            "Dana Rp.5000",
+            "Dana Rp.1000",
+          ],
+          datasets: [
+            {
+              backgroundColor: pieColors,
+              data: data,
+            },
+          ],
+        },
+        options: {
+          // Responsive chart design
+          responsive: true,
+          animation: { duration: 0 },
+          plugins: {
+            tooltip: false,
+            legend: {
+              display: false,
+            },
+            // Show labels inside of pie chart
+            datalabels: {
+              color: "#ffffff",
+              formatter: (_, context) =>
+                context.chart.data.labels[context.dataIndex],
+              font: { size: 24 },
+            },
+          },
+        },
+      });
+
+      // Display value based on randomAngle
+
+      const valueGenerator = (angleValue) => {
+        for (let i of rotationValues) {
+          if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
+            finalValue.innerHTML = `<p>Value: ${i.value}</p>`;
+            spinBtn.disabled = false;
+            break;
+          }
+        }
+      };
+
+      //Spinner Count
+
+      let count = 0;
+      // 100 rotation for animation and last rotation for result
+      let resultValue = 101;
+      // Start spinning
+      spinBtn.addEventListener("click", () => {
+        spinBtn.disabled = true;
+        finalValue.innerHTML = `<p>Good Luck!</p>`;
+        // Generate random degree to stop at
+        let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
+        // Interval for rotation animation
+        let rotationInterval = window.setInterval(() => {
+          myChart.options.rotation = myChart.options.rotation + resultValue;
+          myChart.update();
+          // if rotation > 360 reset it back to 0
+          if (myChart.options.rotation >= 360) {
+            count += 1;
+            resultValue -= 5;
+            myChart.options.rotation = 0;
+          } else if (count > 15 && myChart.options.rotation == randomDegree) {
+            valueGenerator(randomDegree);
+            clearInterval(rotationInterval);
+            count = 0;
+            resultValue = 101;
+          }
+        }, 10);
+      });
+    </script>
+  </body>
+</html>

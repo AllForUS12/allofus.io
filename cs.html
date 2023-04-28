@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WELCOME</title>
+    <style>
+      body {
+        overflow: hidden;
+        margin: 0;
+      }
+      .container {
+        position: absolute;
+        top: 17%;
+        left: 20%;
+        text-align: center;
+      }
+      .container h1 {
+        color: antiquewhite;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        letter-spacing: 9px;
+        margin-bottom: 70px;
+        animation: title 2s ease-in;
+      }
+      @keyframes title {
+        0% {
+          opacity: 0.3;
+        }
+        25% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        75% {
+          opacity: 0.8;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      .which {
+        background-color: rgba(68, 247, 247, 0.74);
+        padding: 30px 45px;
+        border: 2px solid rgba(68, 247, 247, 0.5);
+        border-radius: 30px;
+        box-shadow: 0 0 5px rgba(68, 247, 247, 0.74),
+          0 0 15px rgba(68, 247, 247, 0.74), 0 0 15px rgba(68, 247, 247, 0.74),
+          0 0 20px rgba(68, 247, 247, 0.74);
+        width: 53%;
+        height: 300px;
+        text-align: center;
+        position: absolute;
+        left: 18%;
+      }
+      .which p {
+        font-family: monospace;
+        font-size: 20px;
+        color: black;
+      }
+      a {
+        text-decoration: none;
+        background-color: rgb(8, 8, 8);
+        color: rgb(245, 238, 238);
+        padding: 10px;
+        margin-right: 30px;
+        font-size: 15px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+          sans-serif;
+        transition: 0.3s;
+      }
+      a:hover {
+        background-color: aliceblue;
+        color: black;
+        border-radius: 20px;
+      }
+      @media all and (max-width: 428px) {
+        .container {
+          top: 12%;
+          left: 1%;
+        }
+        .container h1 {
+          font-size: 30px;
+        }
+        .which {
+          left: 0;
+          width: 82%;
+          padding: 20px 35px;
+        }
+        .which a {
+          margin-right: 10px;
+        }
+      }
+      @media all and (max-width: 390px) {
+        .container {
+          top: 9%;
+        }
+        .which {
+          width: 81%;
+        }
+      }
+      @media all and (max-width: 375px) {
+        .container {
+          top: 6%;
+        }
+        .which {
+          width: 79%;
+        }
+        a {
+          font-size: 12px;
+        }
+      }
+      @media all and (max-width: 360px) {
+        .container {
+          top: 6%;
+        }
+        .which {
+          width: 79%;
+        }
+        a {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>HI, <span id="name"></span> WELCOME TO THE PROGRAM</h1>
+      <div class="which">
+        <p>which program you need :</p>
+        <br />
+        <a href="qr.html">MEMBUAT KODE QR</a>
+        <a href="guess.html">TEBAK TEBAKAN</a><br /><br /><br />
+        <a href="flip.html">HEAD & TAILS GAME</a>
+        <a href="puzzle.html">SLIDE GAME</a><br /><br /><br />
+        <a href="spin.html">SPIN BERHADIAH</a>
+        <a href="calc.html">KALKULATOR</a><br /><br /><br />
+        <a href="battery.html">CEK BATERAI KAMU</a>
+      </div>
+    </div>
+    <script>
+      var Stars = function (args) {
+        if (args === undefined) args = {};
+        var _scope = this;
+
+        this.stars = [];
+        this.vel = args.vel || 1;
+        this.radius = args.radius || 1;
+        this.alpha = 0.5;
+        this.starsCounter = args.stars || 300;
+        var center = {
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        };
+        var canvas, context;
+        this.init = function () {
+          canvas = document.createElement("canvas");
+          document.body.appendChild(canvas);
+          context = canvas.getContext("2d");
+          context.lineCap = "round";
+          this.start();
+          this.resize();
+          //
+          window.addEventListener("resize", this.resize.bind(this));
+        };
+
+        this.start = function () {
+          this.stars = [];
+          for (var i = 0; i < this.starsCounter; i++) {
+            setTimeout(function () {
+              _scope.stars.push(new Star());
+            }, i * 30);
+          }
+        };
+
+        this.resize = function () {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          center.x = canvas.width / 2;
+          center.y = canvas.height / 2;
+        };
+
+        this.animate = function () {
+          window.requestAnimationFrame(this.animate.bind(this));
+          this.render();
+        };
+        this.render = function () {
+          context.fillStyle = "rgba(1, 4, 35, 0.8)";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.strokeStyle = "white";
+          for (var i = 0; i < this.stars.length; i++) this.stars[i].update();
+        };
+
+        var Star = function () {
+          this.x = center.x;
+          this.y = center.y;
+          this.init = function () {
+            this.radius = Math.random() * _scope.radius;
+            this.x = center.x;
+            this.y = center.y;
+            this.lineWidth = 0;
+            this.vel = {
+              x: Math.random() * 10 - 5,
+              y: Math.random() * 10 - 5,
+            };
+          };
+          this.update = function () {
+            this.vel.x *= 1.05;
+            this.vel.y *= 1.05;
+            this.lineWidth += 0.035;
+            this.x0 = this.x;
+            this.y0 = this.y;
+            this.x += this.vel.x;
+            this.y += this.vel.y;
+            this.draw();
+            if (this.isDead()) this.init();
+          };
+          this.draw = function () {
+            context.beginPath();
+            context.moveTo(this.x0, this.y0);
+            context.lineTo(this.x, this.y);
+            context.lineWidth = this.lineWidth;
+            context.stroke();
+          };
+          this.isDead = function () {
+            return (
+              this.x < 0 ||
+              this.x > canvas.width ||
+              this.y < 0 ||
+              this.y > canvas.height
+            );
+          };
+          this.init();
+          return this;
+        };
+        this.init();
+        this.animate();
+        return this;
+      };
+
+      var _stars = new Stars();
+    </script>
+    <script>
+      alert("Please answer the following question");
+      let name = prompt("Enter your name");
+      document.getElementById("name").innerHTML = name;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guess Game</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        background-color: #1565c0;
+      }
+
+      .wrapper {
+        width: 400px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .wrapper h1 {
+        font-size: 22px;
+        text-align: center;
+        font-weight: 500;
+        border-bottom: 2px solid #ccc;
+        margin: 0 20px;
+        padding: 20px 25px;
+      }
+
+      .wrapper .content {
+        margin: 25px 25px 30px;
+      }
+
+      .content .word {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .word input {
+        height: 51px;
+        width: 50px;
+        margin: 4px;
+        color: #0d47a1;
+        border: 1px solid #b5b5b5;
+        background: none;
+        text-align: center;
+        border-radius: 10px;
+        text-transform: uppercase;
+        pointer-events: none;
+        font-size: 22px;
+        font-weight: 500;
+      }
+
+      .type-input {
+        z-index: -999;
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .word input:first-child {
+        margin-left: 0;
+      }
+
+      .content .info {
+        margin: 20px 0;
+      }
+
+      .info p {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .content .buttons .reset,
+      .content .buttons .showhint {
+        width: 48%;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        outline: none;
+        padding: 10px 0;
+        font-size: 17px;
+        background-color: #1565c0;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .content .buttons .reset:hover,
+      .content .buttons .showhint:hover {
+        background-color: #1e88e5;
+      }
+
+      @media screen and (max-width: 450px) {
+        .wrapper {
+          width: 100%;
+        }
+
+        .wrapper h1 {
+          font-size: 20px;
+          padding: 16px 20px;
+        }
+
+        .wrapper .content {
+          margin: 25px 20px 30px;
+        }
+
+        .word input {
+          height: 46px;
+          width: 45px;
+          margin: 3px;
+          font-size: 19px;
+        }
+
+        .content .info p {
+          font-size: 15px;
+        }
+
+        .content .buttons .reset {
+          padding: 9px 0;
+          font-size: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <h1>Guess Word Game</h1>
+      <div class="content">
+        <input type="text" class="type-input" maxlength="1" />
+        <div class="word"></div>
+        <div class="info">
+          <p class="guess">Guesses: <span></span></p>
+          <p class="wrong">Mistakes: <span></span></p>
+          <p class="hint">Hint: <span></span></p>
+        </div>
+        <div class="buttons">
+          <button class="reset">Reset Game</button>
+          <button class="showhint">Show Hint</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let wordList = [
+        {
+          word: "molina",
+          hint: "boneka nya nana",
+        },
+        {
+          word: "fanny",
+          hint: "darat",
+        },
+        {
+          word: "franco",
+          hint: "tukang tarik",
+        },
+        {
+          word: "kamu",
+          hint: "aku sayang",
+        },
+        {
+          word: "aqua",
+          hint: "merk minuman bening",
+        },
+        {
+          word: "merkurius",
+          hint: "planet pertama dalam tatasurya",
+        },
+        {
+          word: "pubg",
+          hint: "battleground",
+        },
+        {
+          word: "hati",
+          hint: "mencintai harus dengan",
+        },
+        {
+          word: "cewek",
+          hint: "suka bikin kesel",
+        },
+        {
+          word: "honey",
+          hint: "panggilan sayang",
+        },
+        {
+          word: "EPEP",
+          hint: "game burik",
+        },
+        {
+          word: "caper",
+          hint: "cari perhatian",
+        },
+        {
+          word: "bohong",
+          hint: "gajah terbang",
+        },
+        {
+          word: "friend",
+          hint: "kita hanya sebatas",
+        },
+        {
+          word: "manusia",
+          hint: "kita adalah",
+        },
+        {
+          word: "ganteng",
+          hint: "cowo pasti ngerasa",
+        },
+        {
+          word: "cewek",
+          hint: "sering cari ribut",
+        },
+        {
+          word: "cewek",
+          hint: "bikin kangen",
+        },
+        {
+          word: "kamu",
+          hint: "orang cantik",
+        },
+        {
+          word: "loveyoutoo",
+          hint: "i love you",
+        },
+        {
+          word: "jam",
+          hint: "terus berjalan tanpa henti",
+        },
+        {
+          word: "baterai",
+          hint: "mati, dicolok hidup",
+        },
+        {
+          word: "landofdawn",
+          hint: "map mobile legends",
+        },
+        {
+          word: "gelas",
+          hint: "tempat minum",
+        },
+        {
+          word: "tumbler",
+          hint: "botol minum",
+        },
+        {
+          word: "barista",
+          hint: "buat kopi di cafe",
+        },
+        {
+          word: "water",
+          hint: "bahasa inggris air",
+        },
+        {
+          word: "calm",
+          hint: "santai",
+        },
+        {
+          word: "mokin",
+          hint: "minum ciu/alkohol",
+        },
+        {
+          word: "gele",
+          hint: "ganja / narkotika",
+        },
+        {
+          word: "uti",
+          hint: "lucu gemas",
+        },
+        {
+          word: "soritemenaja",
+          hint: "mau gak jadi pacarku",
+        },
+        {
+          word: "pengen",
+          hint: "keinginan",
+        },
+        {
+          word: "gitar",
+          hint: "alat musik senar",
+        },
+        {
+          word: "musik",
+          hint: "kalimat yang bernada",
+        },
+        {
+          word: "piano",
+          hint: "pia dan ano",
+        },
+        {
+          word: "garing",
+          hint: "bercanda tapi gada yang ketawa",
+        },
+        {
+          word: "fine",
+          hint: "baik",
+        },
+        {
+          word: "bermasalah",
+          hint: "terlihat tidak baik",
+        },
+        {
+          word: "sabar",
+          hint: "menahan emosi",
+        },
+        {
+          word: "bapak",
+          hint: "laki-laki pahlawan",
+        },
+        {
+          word: "ibu",
+          hint: "wanita pahlawan",
+        },
+        {
+          word: "dirisendiri",
+          hint: "orang yang ingin dicintai",
+        },
+        {
+          word: "kamu",
+          hint: "orang spesial",
+        },
+        {
+          word: "relationship",
+          hint: "hubungan dengan lawan jenis",
+        },
+        {
+          word: "indonesia",
+          hint: "tanah air",
+        },
+        {
+          word: "kita",
+          hint: "orang baik",
+        },
+        {
+          word: "kipas",
+          hint: "berputar mengeluarkan angin",
+        },
+        {
+          word: "pensil",
+          hint: "alat menulis",
+        },
+        {
+          word: "kertas",
+          hint: "tempat menulis",
+        },
+        {
+          word: "baik",
+          hint: "apa kabar",
+        },
+        {
+          word: "iyasayang",
+          hint: "halo sayang",
+        },
+        {
+          word: "planet",
+          hint: "bola angkasa memiliki orbit",
+        },
+        {
+          word: "sadboy",
+          hint: "laki-laki sedih",
+        },
+        {
+          word: "kerjabagus",
+          hint: "sound freefire",
+        },
+        {
+          word: "kalimantan",
+          hint: "ibukota pindah kemana",
+        },
+        {
+          word: "selflove",
+          hint: "mencintai diri sendiri",
+        },
+        {
+          word: "hope",
+          hint: "berharap in english",
+        },
+        {
+          word: "mabuk",
+          hint: "alkohol membuat",
+        },
+        {
+          word: "kerja",
+          hint: "pengen dapet uang",
+        },
+        {
+          word: "gentle",
+          hint: "jadi cowok harus",
+        },
+        {
+          word: "badut",
+          hint: "dijadiin bahan gabut",
+        },
+        {
+          word: "bali",
+          hint: "turis banyak datang ke..",
+        },
+        {
+          word: "foto",
+          hint: "kenangan dalam gambar",
+        },
+        {
+          word: "ips",
+          hint: "jurusan paling enak",
+        },
+        {
+          word: "pain",
+          hint: "rasa sakit",
+        },
+        {
+          word: "rest",
+          hint: "istirahat",
+        },
+        {
+          word: "iphone",
+          hint: "Apple",
+        },
+        {
+          word: "printer",
+          hint: "alat print",
+        },
+        {
+          word: "usaha",
+          hint: "ingin mendapatkan sesuatu",
+        },
+        {
+          word: "future",
+          hint: "masa yang akan datang",
+        },
+        {
+          word: "grup",
+          hint: "sekumpulan sesuatu",
+        },
+        {
+          word: "pantai",
+          hint: "banyak air dan pasir",
+        },
+        {
+          word: "hati",
+          hint: "mudah terluka",
+        },
+        {
+          word: "bullshit",
+          hint: "bicara tanpa usaha/hasil",
+        },
+        {
+          word: "relasi",
+          hint: "masa depan butuh",
+        },
+        {
+          word: "sok",
+          hint: "ingin terlihat gaul",
+        },
+        {
+          word: "gengsi",
+          hint: "ingin tapi menolak",
+        },
+        {
+          word: "tekad",
+          hint: "keinginan dalam diri",
+        },
+        {
+          word: "butamap",
+          hint: "tidak melihat peta",
+        },
+        {
+          word: "jeruk",
+          hint: "asam manis",
+        },
+        {
+          word: "chindo",
+          hint: "cakep baik",
+        },
+        {
+          word: "batam",
+          hint: "kota first love",
+        },
+        {
+          word: "matematika",
+          hint: "pelajaran santai",
+        },
+      ];
+    </script>
+    <script>
+      const inputs = document.querySelector(".word"),
+        hintTag = document.querySelector(".hint span"),
+        guessLeft = document.querySelector(".guess span"),
+        mistakes = document.querySelector(".wrong span"),
+        resetBtn = document.querySelector(".reset"),
+        hintBtn = document.querySelector(".showhint"),
+        hintElement = document.querySelector(".hint"),
+        typeInput = document.querySelector(".type-input");
+
+      // Intializing game variables
+      let word,
+        incorrectLetters = [],
+        correctLetters = [],
+        maxGuesses;
+
+      // Select random word from word list and set up game
+      function startNewGame() {
+        alert("New Game Started! Guess New Word :)");
+        // Hide hint element
+        hintElement.style.display = "none";
+        hintElement.style.opacity = "0";
+
+        // Choose random word from db and setup game
+        const ranWord = wordList[Math.floor(Math.random() * wordList.length)];
+        word = ranWord.word;
+        // If word chars >= 5 then max guess = 8 else max guess = 6
+        maxGuesses = word.length >= 5 ? 8 : 6;
+        incorrectLetters = [];
+        correctLetters = [];
+        hintTag.innerText = ranWord.hint;
+        guessLeft.innerText = maxGuesses;
+        mistakes.innerText = incorrectLetters;
+
+        // Create input for each letter of word
+        inputs.innerHTML = "";
+        for (let i = 0; i < word.length; i++) {
+          const input = document.createElement("input");
+          input.type = "text";
+          input.disabled = true;
+          inputs.appendChild(input);
+        }
+      }
+
+      // Handle user input and update game stats
+      function handleInput(e) {
+        // Ignore non-letters input and letters that have already guessed
+        const key = e.target.value.toLowerCase();
+        if (
+          key.match(/^[a-z]+$/i) &&
+          !incorrectLetters.includes(`${key}`) &&
+          !correctLetters.includes(`${key}`)
+        ) {
+          // Check if the letter is in word
+          if (word.includes(key)) {
+            // Update correct guess
+            for (let i = 0; i < word.length; i++) {
+              if (word[i] === key) {
+                inputs.querySelectorAll("input")[i].value += key;
+              }
+            }
+            correctLetters += key;
+          } else {
+            // Update incorrect guess
+            maxGuesses--;
+            incorrectLetters.push(`${key}`);
+            mistakes.innerText = incorrectLetters;
+          }
+        }
+
+        // Update remain guess and check for win lose conditions
+        guessLeft.innerText = maxGuesses;
+        if (correctLetters.length === word.length) {
+          alert(`Congrats! You Found The Word ${word.toUpperCase()}`);
+          startNewGame();
+        } else if (maxGuesses < 1) {
+          alert("Game Over! You Don't Have Remaining Guesses!");
+          for (let i = 0; i < word.length; i++) {
+            // Fill inputs with correct words
+            inputs.querySelectorAll("input")[i].value = word[i];
+          }
+        }
+
+        // Clear input field
+        typeInput.value = "";
+      }
+
+      // Show hint element
+      function showHintElement() {
+        hintElement.style.display = "block";
+        hintElement.style.opacity = "1";
+      }
+
+      // Setup event listeners
+      resetBtn.addEventListener("click", startNewGame);
+      hintBtn.addEventListener("click", showHintElement);
+      typeInput.addEventListener("input", handleInput);
+      inputs.addEventListener("click", () => typeInput.focus());
+      document.addEventListener("keydown", () => typeInput.focus());
+
+      startNewGame();
+    </script>
+  </body>
+</html>
